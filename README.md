@@ -17,8 +17,6 @@ The project involves implementing a **Library Management System** of moderate co
 ## Repository Contents
 - `Version_A_Traditional/` - Source code for the manual implementation.
 - `Version_B_AIAssisted/` - Source code and prompt logs for the AI-assisted implementation.
-- `Assessment_Report.docx` - The final compiled assessment report containing conceptual analysis, comparative evaluation, and critical analysis of the AI tools.
-- `generate_report.py` - The Python script used to automatically construct and format the Word document and download the UML diagrams.
 - `*.png` - Generated UML diagrams (Use Case, Class, Activity, Sequence) visually describing the system architecture and logic.
 ## How to Run
 ### Requirements

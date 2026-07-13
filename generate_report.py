@@ -7,10 +7,10 @@ from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 
-def download_mermaid_image(mermaid_code, filename):
-    compressed = zlib.compress(mermaid_code.encode('utf-8'), 9)
+def download_diagram(code, filename, diagram_type='mermaid'):
+    compressed = zlib.compress(code.encode('utf-8'), 9)
     encoded = base64.urlsafe_b64encode(compressed).decode('ascii')
-    url = f"https://kroki.io/mermaid/png/{encoded}"
+    url = f"https://kroki.io/{diagram_type}/png/{encoded}"
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as response, open(filename, 'wb') as out_file:
@@ -116,24 +116,28 @@ def main():
     doc.add_page_break()
     
     add_heading(doc, "UML Diagrams", level=2, font_size=14)
-    add_paragraph(doc, "The following UML diagrams were generated using Mermaid.")
+    add_paragraph(doc, "The following UML diagrams were generated.")
 
-    # Mermaid definitions
+    # PlantUML definition for Use Case
     use_case = '''
-    usecaseDiagram
-    actor User
-    actor Librarian
-    usecase "Borrow Book" as UC1
-    usecase "Return Book" as UC2
-    usecase "View Books" as UC3
-    usecase "Add Book" as UC4
-    usecase "Register User" as UC5
-    User --> UC1
-    User --> UC2
-    User --> UC3
-    Librarian --> UC4
-    Librarian --> UC5
-    Librarian --> UC3
+    @startuml
+    left to right direction
+    actor "User" as user
+    actor "Librarian" as lib
+    package Library {
+      usecase "Borrow Book" as UC1
+      usecase "Return Book" as UC2
+      usecase "View Books" as UC3
+      usecase "Add Book" as UC4
+      usecase "Register User" as UC5
+    }
+    user --> UC1
+    user --> UC2
+    user --> UC3
+    lib --> UC4
+    lib --> UC5
+    lib --> UC3
+    @enduml
     '''
     
     class_diagram = '''
@@ -203,14 +207,14 @@ def main():
     '''
 
     images = [
-        (use_case, "use_case.png", "Use Case Diagram"),
-        (class_diagram, "class.png", "Class Diagram"),
-        (activity_diagram, "activity.png", "Activity Diagram"),
-        (sequence_diagram, "sequence.png", "Sequence Diagram")
+        (use_case, "use_case.png", "Use Case Diagram", "plantuml"),
+        (class_diagram, "class.png", "Class Diagram", "mermaid"),
+        (activity_diagram, "activity.png", "Activity Diagram", "mermaid"),
+        (sequence_diagram, "sequence.png", "Sequence Diagram", "mermaid")
     ]
 
-    for code, filename, title in images:
-        if download_mermaid_image(code, filename):
+    for code, filename, title, dtype in images:
+        if download_diagram(code, filename, diagram_type=dtype):
             add_paragraph(doc, f"{title}:", font_name='Times New Roman', font_size=12)
             doc.add_picture(filename, width=Inches(6.0))
             add_paragraph(doc, "")
